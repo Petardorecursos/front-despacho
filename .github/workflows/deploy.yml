@@ -1,4 +1,4 @@
-name: CI/CD Pipeline - Despachos
+name: CI/CD Pipeline - Frontend Despacho
 
 on:
   push:
@@ -6,7 +6,8 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: back-despachos_springboot
+  # CORRECCIÓN: Ahora apuntamos al repositorio correcto de ECR
+  ECR_REPOSITORY: front_despacho 
 
 jobs:
   build-and-push:
