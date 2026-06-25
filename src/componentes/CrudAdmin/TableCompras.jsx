@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+// Importamos nuestra capa de servicios centralizada en lugar de axios directamente
+import api from "../../services/api";
+
 // Si tienes un modal para las compras, descomenta estas líneas y ajusta los nombres
 // import { Modal } from "./Modal";
 // import { FormDetalleCompra } from "./FormDetalleCompra";
@@ -11,13 +13,9 @@ export const TableCompras = () => {
 
   const fetchCompras = async () => {
     try {
-      const response = await axios.get("http://192.168.3.20/api/v1/compras", {
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
-      });
-      console.log(response.data);
+      // AQUÍ ESTÁ LA MAGIA: URL del LoadBalancer de AWS para tu back-ventas
+      const response = await api.get("http://a78f42c00ca98423ea53b3dd94cdad94-457896225.us-east-1.elb.amazonaws.com:8080/api/v1/compras");
+      console.log("Compras obtenidas:", response.data);
       setCompras(response.data);
     } catch (error) {
       console.error("Error al obtener las compras:", error);
