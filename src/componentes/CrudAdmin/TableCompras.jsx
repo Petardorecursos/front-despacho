@@ -1,34 +1,34 @@
 import { useState, useEffect } from "react";
-import { Modal } from "./Modal";
-import { FormDespacho } from "./FormDespacho";
 import axios from "axios";
+import { Modal } from "./Modal";
+import { FormCierreDespacho } from "./FormCierreDespacho";
 
-export const TableCompras = () => {
-  const [ventas, setVentas] = useState([]);
+export const TableDespachos = () => {
+  const [despachos, setDespachos] = useState([]);
 
-  const compras = async () => {
-    await axios.get("http://192.168.30/api/v1/ventas", {
-      headers:{
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-  }
-    }).then((response) => {
-      console.log(response.data);
-      setVentas(response.data);
-    });
+  const despacho = async () => {
+    await axios
+      .get("http://192.168.3.20/api/v1/despachos", {
+        headers:{
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+        }
+      })
+      .then((response) => {
+        console.log(response.data);
+        setDespachos(response.data);
+      });
   };
   // Llamada a la función para obtener los datos cuando el componente se monta
   useEffect(() => {
-    compras();
+    despacho();
   }, []);
 
-  //state que controla el modal
   const [openModal, setOpenModal] = useState(false);
+  const [despachoSeleccionado, setDespachoSeleccionado] = useState(null);
 
-  //state que abre el modal junto con la data del id seleccionado
-  const [ventaSeleccionada, setVentaSeleccionada] = useState(null);
-  const handleAbrirModal = (venta) => {
-    setVentaSeleccionada(venta);
+  const handleAbrirModal = (despacho) => {
+    setDespachoSeleccionado(despacho);
     setOpenModal(true);
   };
 
@@ -40,40 +40,51 @@ export const TableCompras = () => {
             <table className="table-fixed">
               <thead>
                 <tr className="py-10">
+                  <th className="pr-10">Orden de despacho</th>
                   <th className="pr-10">Orden de compra</th>
-                  <th className="pr-10">direccion</th>
-                  <th className="pr-10">fecha de compra</th>
-                  <th className="pr-10">valor total</th>
-                  <th className="pr-10"></th>
+                  <th className="pr-10">Dirección de entrega</th>
+                  <th className="pr-10">Fecha despacho</th>
+                  <th className="pr-10">Patente Camión</th>
+                  <th className="pr-10">Entregado</th>
+                  <th className="pr-10">Intentos de entrega</th>
                 </tr>
               </thead>
               <tbody>
-                {ventas
-                  .filter((venta) => !venta.despachoGenerado)
-                  .map((venta) => (
-                    <tr key={venta.idVenta}>
-                      <td className="pr-10 py-10 items-center">
-                        {venta.idVenta}
-                      </td>
-                      <td className="pr-10 py-10  items-center">
-                        {venta.direccionCompra}
-                      </td>
-                      <td className="pr-10 py-10  items-center">
-                        {venta.fechaCompra}
-                      </td>
-                      <td className="pr-10 py-10  items-center">
-                        ${venta.valorCompra}
-                      </td>
-                      <td>
-                        <button
-                          onClick={() => handleAbrirModal(venta)}
-                          className="py-1 bg-orange-200 px-8 rounded-xl shadow-md hover:bg-orange-300/70 transition-all duration-300 "
-                        >
-                          Generar Despacho
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                {despachos
+               
+                .map((despacho) => (
+                  <tr key={despacho.idDespacho}>
+                    <td className="pr-10 py-10 items-center">{despacho.idDespacho}</td>
+                    <td className="pr-10 py-10  items-center">
+                      {despacho.idCompra}
+                    </td>
+                    <td className="pr-10 py-10  items-center">
+                      {despacho.direccionCompra}
+                    </td>
+                    <td className="pr-10 py-10  items-center">
+                      {despacho.fechaDespacho}
+                    </td>
+                    <td className="pr-10 py-10  items-center">
+                      {despacho.patenteCamion}
+                    </td>
+                    <td className="pr-10 py-10  items-center">
+                      {despacho.entregado
+                        ? "Despacho entregado"
+                        : "Despacho pendiente"}
+                    </td>
+                    <td className="pr-10 py-10  items-center">
+                      {despacho.intento}
+                    </td>
+                    <td>
+                      <button
+                        onClick={() => handleAbrirModal(despacho)}
+                        className="py-1 bg-orange-200 px-8 rounded-xl shadow-md hover:bg-orange-300/70 transition-all duration-300 "
+                      >
+                        Cerrar despacho
+                      </button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -85,12 +96,12 @@ export const TableCompras = () => {
         }}
         open={openModal}
       >
-        {ventaSeleccionada && (
-          <FormDespacho
-            venta={ventaSeleccionada}
+        {despachoSeleccionado && (
+          <FormCierreDespacho
+            despacho={despachoSeleccionado}
             onClose={() => {
               //onclose es un prop que pasa funciones al modal con el form abierto, por ende al cerrarse, se ejecutan esas 2 funciones
-              setOpenModal(false), compras();
+              setOpenModal(false), despacho();
             }}
           />
         )}
