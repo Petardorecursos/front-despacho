@@ -13,8 +13,8 @@ export const TableCompras = () => {
 
   const fetchCompras = async () => {
     try {
-      // AQUÍ ESTÁ LA MAGIA: URL del LoadBalancer de AWS para tu back-ventas
-      const response = await api.get("http://a78f42c00ca98423ea53b3dd94cdad94-457896225.us-east-1.elb.amazonaws.com:8080/api/v1/compras");
+      // AQUÍ ESTÁ LA MAGIA: URL del LoadBalancer de AWS para tu back-ventas apuntando a /ventas
+      const response = await api.get("http://a78f42c00ca98423ea53b3dd94cdad94-457896225.us-east-1.elb.amazonaws.com:8080/api/v1/ventas");
       console.log("Compras obtenidas:", response.data);
       setCompras(response.data);
     } catch (error) {
@@ -42,7 +42,7 @@ export const TableCompras = () => {
               <thead>
                 <tr className="py-10 border-b">
                   <th className="p-4">ID Compra</th>
-                  <th className="p-4">Cliente / Proveedor</th>
+                  <th className="p-4">Dirección / Cliente</th>
                   <th className="p-4">Fecha de Compra</th>
                   <th className="p-4">Total</th>
                   <th className="p-4">Estado</th>
@@ -50,15 +50,16 @@ export const TableCompras = () => {
                 </tr>
               </thead>
               <tbody>
+                {/* Utilizamos las variables exactas que devuelve tu backend */}
                 {compras.map((compra) => (
-                  <tr key={compra.idCompra} className="border-b hover:bg-gray-50">
-                    <td className="p-4 items-center">{compra.idCompra}</td>
-                    <td className="p-4 items-center">{compra.cliente || "N/A"}</td>
+                  <tr key={compra.idVenta} className="border-b hover:bg-gray-50">
+                    <td className="p-4 items-center">{compra.idVenta}</td>
+                    <td className="p-4 items-center">{compra.direccionCompra || "N/A"}</td>
                     <td className="p-4 items-center">{compra.fechaCompra}</td>
-                    <td className="p-4 items-center">${compra.total}</td>
+                    <td className="p-4 items-center">${compra.valorCompra}</td>
                     <td className="p-4 items-center">
-                      <span className={`px-2 py-1 rounded text-sm ${compra.estado === 'Completada' ? 'bg-green-200 text-green-800' : 'bg-yellow-200 text-yellow-800'}`}>
-                        {compra.estado || "Pendiente"}
+                      <span className={`px-2 py-1 rounded text-sm ${compra.despachoGenerado ? 'bg-green-200 text-green-800' : 'bg-yellow-200 text-yellow-800'}`}>
+                        {compra.despachoGenerado ? "Despachado" : "Pendiente"}
                       </span>
                     </td>
                     <td className="p-4">
