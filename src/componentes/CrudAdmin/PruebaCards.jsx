@@ -4,8 +4,8 @@ import { TableCompras } from "./TableCompras";
 import { TableDespachos } from "./TableDespachos";
 
 export const PruebaCards = () => {
-  // 'activeTab' puede ser: 'compras', 'despachos' o null
-  const [activeTab, setActiveTab] = useState(null);
+  const [tablaCompras, setTablaCompras] = useState(false);
+  const [tablaOrdenes, setTablaOrdenes] = useState(false);
 
   return (
     <section>
@@ -14,20 +14,25 @@ export const PruebaCards = () => {
           title="Consultar Ordenes de compra 💰"
           description="Revisa las últimas oc realizadas para generar su despacho"
           buttonText="Consultar"
-          // Ahora solo cambias un estado, el resto se limpia solo
-          onClick={() => setActiveTab('compras')}
+          onClick={() => {
+            setTablaCompras(true);
+            setTablaOrdenes(false);
+          }}
         />
         <CardComponent
           title="Revisar Ordenes de despacho 🚚"
           description="Consulta los despachos realizados, modifica los registros de intentos o cierra la orden"
           buttonText="Consultar"
-          onClick={() => setActiveTab('despachos')}
+          onClick={() => {
+            setTablaCompras(false);
+            setTablaOrdenes(true);
+          }}
         />
       </div>
 
       <section>
-        {activeTab === 'compras' && <TableCompras />}
-        {activeTab === 'despachos' && <TableDespachos />}
+        {tablaCompras && <TableCompras />}
+        {tablaOrdenes && <TableDespachos />}
       </section>
     </section>
   );
