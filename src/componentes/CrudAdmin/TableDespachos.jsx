@@ -11,8 +11,8 @@ export const TableDespachos = () => {
 
   const fetchDespachos = async () => {
     try {
-      // Usamos nuestra instancia 'api' (baseUrl configurada en api.js)
-      const response = await api.get("/api/v1/despachos");
+      // AQUÍ ESTÁ LA MAGIA: Usamos la URL pública exacta del LoadBalancer de AWS para tu back-despachos
+      const response = await api.get("http://ab93a94b392b34bfb85bff4731ae9fe2-588229136.us-east-1.elb.amazonaws.com:8080/api/v1/despachos");
       console.log("Despachos obtenidos:", response.data);
       setDespachos(response.data);
     } catch (error) {
