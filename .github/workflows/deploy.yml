@@ -6,7 +6,6 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  # CORRECCIÓN: Ahora apuntamos al repositorio correcto de ECR
   ECR_REPOSITORY: front_despacho 
 
 jobs:
@@ -28,10 +27,10 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v2
 
-    - name: Construir, etiquetar y empujar la imagen a ECR
+    - name: Construir y empujar imagen con etiqueta única
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        IMAGE_TAG: latest
+        IMAGE_TAG: ${{ github.sha }}
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
