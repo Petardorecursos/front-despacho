@@ -1,18 +1,26 @@
-#Usa una imagen de node como base
-FROM node:20-alpine AS build
-#Establece el directorio de trabajo dentro del contenedor
+# Etapa 1: Construcción (Build)
+FROM node:18-alpine AS build
 WORKDIR /app
-#Copiar el archivo package.json package-lock.json
-COPY package.json package-lock.json ./
-#Instala las dependencias del proyecto
+
+# Copiar los archivos de dependencias de Node
+COPY package*.json ./
 RUN npm install
-#Copiar el resto del codigo del proyecto
+
+# Copiar el resto del código y construir la aplicación para producción
 COPY . .
-#Compilar el proyecto
 RUN npm run build
-#Usar una imagen de nginx para servir el contenido estatico
-FROM nginx:1.19.0-alpine
-#Copiar los archivos de construccion desde la etapa anterior
-COPY --from=build /app/dist/ /usr/share/nginx/html
-#Exponer el puerto que se usará para acceder a la aplicacion
+
+# Etapa 2: Distribución con Nginx
+FROM nginx:alpine
+
+# Copiar la carpeta compilada de Ionic al directorio de Nginx
+COPY --from=build /app/www /usr/share/nginx/html
+
+# Configuración de Nginx para evitar fallas en el enrutamiento de Angular/Ionic
+RUN rm /etc/nginx/conf.d/default.conf
+RUN echo 'server { listen 80; location / { root /usr/share/nginx/html; index index.html index.htm; try_files $uri $uri/ /index.html; } }' > /etc/nginx/conf.d/default.conf
+
+# Exponer el puerto HTTP estándar
 EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
