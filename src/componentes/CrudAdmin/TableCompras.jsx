@@ -1,86 +1,74 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Modal } from "./Modal";
-import { FormCierreDespacho } from "./FormCierreDespacho";
+// Si tienes un modal para las compras, descomenta estas líneas y ajusta los nombres
+// import { Modal } from "./Modal";
+// import { FormDetalleCompra } from "./FormDetalleCompra";
 
-export const TableDespachos = () => {
-  const [despachos, setDespachos] = useState([]);
+export const TableCompras = () => {
+  const [compras, setCompras] = useState([]);
+  // const [openModal, setOpenModal] = useState(false);
+  // const [compraSeleccionada, setCompraSeleccionada] = useState(null);
 
-  const despacho = async () => {
-    await axios
-      .get("http://192.168.3.20/api/v1/despachos", {
-        headers:{
-              'Content-Type': 'application/json',
-              'Accept': 'application/json'
+  const fetchCompras = async () => {
+    try {
+      const response = await axios.get("http://192.168.3.20/api/v1/compras", {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         }
-      })
-      .then((response) => {
-        console.log(response.data);
-        setDespachos(response.data);
       });
+      console.log(response.data);
+      setCompras(response.data);
+    } catch (error) {
+      console.error("Error al obtener las compras:", error);
+    }
   };
+
   // Llamada a la función para obtener los datos cuando el componente se monta
   useEffect(() => {
-    despacho();
+    fetchCompras();
   }, []);
 
-  const [openModal, setOpenModal] = useState(false);
-  const [despachoSeleccionado, setDespachoSeleccionado] = useState(null);
-
-  const handleAbrirModal = (despacho) => {
-    setDespachoSeleccionado(despacho);
+  /* const handleAbrirModal = (compra) => {
+    setCompraSeleccionada(compra);
     setOpenModal(true);
-  };
+  }; 
+  */
 
   return (
     <>
       <section className="grid text-center grid-cols-12 mb-8">
         <div className="col-span-12 flex justify-center">
           <div className="col-span-10 p-2 bg-white border border-gray-200 rounded-lg shadow dark:bg-white h-full overflow-hidden">
-            <table className="table-fixed">
+            <table className="table-fixed w-full">
               <thead>
-                <tr className="py-10">
-                  <th className="pr-10">Orden de despacho</th>
-                  <th className="pr-10">Orden de compra</th>
-                  <th className="pr-10">Dirección de entrega</th>
-                  <th className="pr-10">Fecha despacho</th>
-                  <th className="pr-10">Patente Camión</th>
-                  <th className="pr-10">Entregado</th>
-                  <th className="pr-10">Intentos de entrega</th>
+                <tr className="py-10 border-b">
+                  <th className="p-4">ID Compra</th>
+                  <th className="p-4">Cliente / Proveedor</th>
+                  <th className="p-4">Fecha de Compra</th>
+                  <th className="p-4">Total</th>
+                  <th className="p-4">Estado</th>
+                  <th className="p-4">Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                {despachos
-               
-                .map((despacho) => (
-                  <tr key={despacho.idDespacho}>
-                    <td className="pr-10 py-10 items-center">{despacho.idDespacho}</td>
-                    <td className="pr-10 py-10  items-center">
-                      {despacho.idCompra}
+                {compras.map((compra) => (
+                  <tr key={compra.idCompra} className="border-b hover:bg-gray-50">
+                    <td className="p-4 items-center">{compra.idCompra}</td>
+                    <td className="p-4 items-center">{compra.cliente || "N/A"}</td>
+                    <td className="p-4 items-center">{compra.fechaCompra}</td>
+                    <td className="p-4 items-center">${compra.total}</td>
+                    <td className="p-4 items-center">
+                      <span className={`px-2 py-1 rounded text-sm ${compra.estado === 'Completada' ? 'bg-green-200 text-green-800' : 'bg-yellow-200 text-yellow-800'}`}>
+                        {compra.estado || "Pendiente"}
+                      </span>
                     </td>
-                    <td className="pr-10 py-10  items-center">
-                      {despacho.direccionCompra}
-                    </td>
-                    <td className="pr-10 py-10  items-center">
-                      {despacho.fechaDespacho}
-                    </td>
-                    <td className="pr-10 py-10  items-center">
-                      {despacho.patenteCamion}
-                    </td>
-                    <td className="pr-10 py-10  items-center">
-                      {despacho.entregado
-                        ? "Despacho entregado"
-                        : "Despacho pendiente"}
-                    </td>
-                    <td className="pr-10 py-10  items-center">
-                      {despacho.intento}
-                    </td>
-                    <td>
+                    <td className="p-4">
                       <button
-                        onClick={() => handleAbrirModal(despacho)}
-                        className="py-1 bg-orange-200 px-8 rounded-xl shadow-md hover:bg-orange-300/70 transition-all duration-300 "
+                        // onClick={() => handleAbrirModal(compra)}
+                        className="py-1 bg-blue-200 px-6 rounded-xl shadow-md hover:bg-blue-300/70 transition-all duration-300"
                       >
-                        Cerrar despacho
+                        Ver Detalle
                       </button>
                     </td>
                   </tr>
@@ -90,22 +78,23 @@ export const TableDespachos = () => {
           </div>
         </div>
       </section>
-      <Modal
-        onClose={() => {
-          setOpenModal(false);
-        }}
+
+      {/* Modal para detalles de la compra (Descomentar si es necesario) */}
+      {/* <Modal
+        onClose={() => setOpenModal(false)}
         open={openModal}
       >
-        {despachoSeleccionado && (
-          <FormCierreDespacho
-            despacho={despachoSeleccionado}
+        {compraSeleccionada && (
+          <FormDetalleCompra
+            compra={compraSeleccionada}
             onClose={() => {
-              //onclose es un prop que pasa funciones al modal con el form abierto, por ende al cerrarse, se ejecutan esas 2 funciones
-              setOpenModal(false), despacho();
+              setOpenModal(false);
+              fetchCompras();
             }}
           />
         )}
-      </Modal>
+      </Modal> 
+      */}
     </>
   );
 };
