@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import api from "../../services/api";
+import { apiVentas } from "../../services/api"; // Importación correcta
 
 export const TableCompras = () => {
   const [compras, setCompras] = useState([]);
@@ -10,7 +10,8 @@ export const TableCompras = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await api.get("http://a78f42c00ca98423ea53b3dd94cdad94-457896225.us-east-1.elb.amazonaws.com:8080/api/v1/ventas");
+      // Usamos apiVentas y solo la ruta relativa
+      const response = await apiVentas.get("/api/v1/ventas"); 
       console.log("Compras obtenidas:", response.data);
       setCompras(response.data);
     } catch (err) {
@@ -37,7 +38,6 @@ export const TableCompras = () => {
             {!loading && !error && (
               <table className="table-fixed w-full">
                 <thead>
-                  {/* Header con fondo sutil y texto más oscuro */}
                   <tr className="bg-slate-50 border-b border-slate-100 text-slate-600 font-semibold">
                     <th className="p-4">ID Compra</th>
                     <th className="p-4">Dirección / Cliente</th>
@@ -56,13 +56,11 @@ export const TableCompras = () => {
                         <td className="p-4 text-slate-600">{compra.fechaCompra}</td>
                         <td className="p-4 font-bold text-indigo-600">${compra.valorCompra}</td>
                         <td className="p-4">
-                          {/* Badges tipo píldora con colores más elegantes */}
                           <span className={`px-3 py-1 rounded-full text-xs font-medium border ${compra.despachoGenerado ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'}`}>
                             {compra.despachoGenerado ? "Despachado" : "Pendiente"}
                           </span>
                         </td>
                         <td className="p-4">
-                          {/* Botón con color Indigo y efecto de escala */}
                           <button className="py-2 px-6 bg-indigo-600 text-white text-sm font-medium rounded-lg shadow-md hover:bg-indigo-700 hover:shadow-lg transition-all duration-300 transform hover:scale-105">
                             Ver Detalle
                           </button>
