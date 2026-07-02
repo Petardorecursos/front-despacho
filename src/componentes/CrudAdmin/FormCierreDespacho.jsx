@@ -8,13 +8,15 @@ export const FormCierreDespacho = ({ despacho, onClose }) => {
   const onSubmit = async (data) => {
     console.log("onSubmit ejecutado");
     
-    // Convertimos los valores a los tipos correctos que espera tu backend
+    // SOLUCIÓN: Usamos el objeto 'despacho' original y sobreescribimos solo los cambios
+    // Esto evita que el backend reciba campos como NULL
     const jsonData = {
-      intento: parseInt(data.intento),
-      despachado: data.despachado === "true", 
+      ...despacho, 
+      intento: parseInt(data.intento, 10),
+      despachado: String(data.despachado) === "true", 
     };
 
-    console.log("Datos del formulario:", jsonData);
+    console.log("Datos que se enviarán al backend:", jsonData);
 
     try {
       // Usamos apiDespacho.put con la ruta relativa
@@ -26,7 +28,7 @@ export const FormCierreDespacho = ({ despacho, onClose }) => {
         icon: "success",
         confirmButtonText: "Aceptar",
       });
-      onClose(); // Cerramos solo si la petición tuvo éxito
+      onClose(); 
     } catch (error) {
       console.error("Error en la solicitud:", error);
       Swal.fire({
