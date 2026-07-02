@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Modal } from "./Modal";
 import { FormCierreDespacho } from "./FormCierreDespacho";
-// Importamos la instancia específica para despachos
 import { apiDespacho } from "../../services/api"; 
 
 export const TableDespachos = () => {
@@ -11,7 +10,6 @@ export const TableDespachos = () => {
 
   const fetchDespachos = async () => {
     try {
-      // Usamos apiDespacho y la ruta relativa
       const response = await apiDespacho.get("/api/v1/despachos");
       console.log("Despachos obtenidos:", response.data);
       setDespachos(response.data);
@@ -47,15 +45,19 @@ export const TableDespachos = () => {
                 </tr>
               </thead>
               <tbody>
-                {despachos.map((despacho) => (
+                {/* Verificamos que sea un array para evitar errores de renderizado en blanco */}
+                {Array.isArray(despachos) && despachos.map((despacho) => (
                   <tr key={despacho.idDespacho}>
                     <td className="pr-10 py-10 items-center">{despacho.idDespacho}</td>
                     <td className="pr-10 py-10 items-center">{despacho.idCompra}</td>
                     <td className="pr-10 py-10 items-center">{despacho.direccionCompra}</td>
                     <td className="pr-10 py-10 items-center">{despacho.fechaDespacho}</td>
                     <td className="pr-10 py-10 items-center">{despacho.patenteCamion}</td>
-                    <td className="pr-10 py-10 items-center">
-                      {despacho.entregado ? "Despacho entregado" : "Despacho pendiente"}
+                    <td className="pr-10 py-10 items-center font-bold">
+                      {/* Corregido: usamos 'despachado' y validamos si es true o 1 */}
+                      {(despacho.despachado === true || despacho.despachado === 1) 
+                        ? "Despacho entregado" 
+                        : "Despacho pendiente"}
                     </td>
                     <td className="pr-10 py-10 items-center">{despacho.intento}</td>
                     <td>
