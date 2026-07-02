@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Modal } from "./Modal";
 import { FormCierreDespacho } from "./FormCierreDespacho";
-// Importamos nuestra capa de servicios centralizada
-import api from "../../services/api"; 
+// Importamos la instancia específica para despachos
+import { apiDespacho } from "../../services/api"; 
 
 export const TableDespachos = () => {
   const [despachos, setDespachos] = useState([]);
@@ -11,8 +11,8 @@ export const TableDespachos = () => {
 
   const fetchDespachos = async () => {
     try {
-      // AQUÍ ESTÁ LA MAGIA: Usamos la URL pública exacta del LoadBalancer de AWS para tu back-despachos
-      const response = await api.get("http://ab93a94b392b34bfb85bff4731ae9fe2-588229136.us-east-1.elb.amazonaws.com:8080/api/v1/despachos");
+      // Usamos apiDespacho y la ruta relativa
+      const response = await apiDespacho.get("/api/v1/despachos");
       console.log("Despachos obtenidos:", response.data);
       setDespachos(response.data);
     } catch (error) {
