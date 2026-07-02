@@ -20,7 +20,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }} # ¡Esto es lo que faltaba!
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Iniciar sesión en Amazon ECR
@@ -37,7 +37,7 @@ jobs:
 
       - name: Actualizar EKS Deployment
         run: |
-          # Actualiza tu kubeconfig
-          aws eks update-kubeconfig --name nombre-de-tu-cluster --region ${{ env.AWS_REGION }}
+          # Actualiza tu kubeconfig con el nombre correcto del cluster
+          aws eks update-kubeconfig --name cluster-innovatech --region ${{ env.AWS_REGION }}
           # Fuerza a que el pod se reinicie para descargar la nueva imagen
           kubectl rollout restart deployment front-despacho-deployment
