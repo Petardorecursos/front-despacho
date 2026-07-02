@@ -42,10 +42,10 @@ export const TableDespachos = () => {
                   <th className="pr-10">Patente Camión</th>
                   <th className="pr-10">Entregado</th>
                   <th className="pr-10">Intentos de entrega</th>
+                  <th className="pr-10">Acción</th>
                 </tr>
               </thead>
               <tbody>
-                {/* Verificamos que sea un array para evitar errores de renderizado en blanco */}
                 {Array.isArray(despachos) && despachos.map((despacho) => (
                   <tr key={despacho.idDespacho}>
                     <td className="pr-10 py-10 items-center">{despacho.idDespacho}</td>
@@ -53,12 +53,14 @@ export const TableDespachos = () => {
                     <td className="pr-10 py-10 items-center">{despacho.direccionCompra}</td>
                     <td className="pr-10 py-10 items-center">{despacho.fechaDespacho}</td>
                     <td className="pr-10 py-10 items-center">{despacho.patenteCamion}</td>
-                    <td className="pr-10 py-10 items-center font-bold">
-                      {/* Corregido: usamos 'despachado' y validamos si es true o 1 */}
+                    
+                    {/* Columna con color dinámico */}
+                    <td className={`pr-10 py-10 items-center font-bold ${(despacho.despachado === true || despacho.despachado === 1) ? "text-green-600" : "text-red-600"}`}>
                       {(despacho.despachado === true || despacho.despachado === 1) 
                         ? "Despacho entregado" 
                         : "Despacho pendiente"}
                     </td>
+
                     <td className="pr-10 py-10 items-center">{despacho.intento}</td>
                     <td>
                       <button
@@ -85,7 +87,7 @@ export const TableDespachos = () => {
             despacho={despachoSeleccionado}
             onClose={() => {
               setOpenModal(false);
-              fetchDespachos(); // Recargamos la tabla al cerrar el modal
+              fetchDespachos();
             }}
           />
         )}
