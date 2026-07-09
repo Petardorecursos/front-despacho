@@ -10,8 +10,8 @@ export const TableCompras = () => {
     try {
       setLoading(true);
       setError(null);
-      // Usamos apiVentas y solo la ruta relativa
-      const response = await apiVentas.get("/api/v1/ventas"); 
+      // AQUÍ ESTÁ LA MAGIA: URL pública del LoadBalancer de AWS para back-ventas
+      const response = await apiVentas.get("http://a05f489a54a574dda9112b28db4bdf92-2135110527.us-east-1.elb.amazonaws.com:8080/api/v1/ventas"); 
       console.log("Compras obtenidas:", response.data);
       setCompras(response.data);
     } catch (err) {
