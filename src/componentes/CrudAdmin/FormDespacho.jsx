@@ -6,7 +6,9 @@ export const FormDespacho = ({ venta, onClose }) => {
   const { register, handleSubmit } = useForm();
 
   const onSubmit = async (data) => {
-    console.log("onSubmit ejecutado");
+    console.log("Iniciando registro de despacho...");
+    
+    // JSON para crear el despacho (API Despachos)
     const jsonData = {
       fechaDespacho: data.fechaDespacho,
       patenteCamion: data.patenteCamion,
@@ -17,40 +19,52 @@ export const FormDespacho = ({ venta, onClose }) => {
       valorCompra: venta.valorCompra,
     };
 
+    // JSON para actualizar la venta (API Ventas)
     const jsonDataSales = {
       despachoGenerado: true,
     };
 
-    console.log("Datos del formulario:", jsonData);
-
     try {
+      // 1. Actualizamos la Venta (Marcamos como despachado)
+      // URL del LoadBalancer de back-ventas
       await axios.put(
-        `http://192.168.30/api/v1/ventas/${venta.idVenta}`,
+        `http://a05f489a54a574dda9112b28db4bdf92-2135110527.us-east-1.elb.amazonaws.com:8080/api/v1/ventas/${venta.idVenta}`,
         jsonDataSales,
         {
-          headers:{
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-      }
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }
         }
       );
-      await axios.post("http://192.168.320/api/v1/despachos", jsonData, {
-        headers:{
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-    }
-      });
+
+      // 2. Creamos el nuevo Despacho
+      // URL del LoadBalancer de back-despachos
+      await axios.post(
+        "http://aa5b3d53e0ee840eab086584460c245c-1682991390.us-east-1.elb.amazonaws.com:8080/api/v1/despachos", 
+        jsonData, 
+        {
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }
+        }
+      );
+
       Swal.fire({
         title: "Despacho registrado 🛻!",
-        text: "El despacho ha sido generado con éxito en la base de datos",
+        text: "El despacho ha sido generado con éxito y la orden de compra fue actualizada.",
         icon: "success",
         confirmButtonText: "Aceptar",
       });
+
+      // Cerramos el modal y refrescamos la tabla
+      onClose();
+
     } catch (error) {
       console.error("Error en la solicitud:", error);
+      Swal.fire({
+        title: "Error",
+        text: "Hubo un problema al registrar el despacho. Revisa la consola.",
+        icon: "error",
+      });
     }
-    onClose();
   };
+
   return (
     <>
       <form
@@ -60,28 +74,28 @@ export const FormDespacho = ({ venta, onClose }) => {
         <div className="mx-auto text-3xl font-bold mb-10 text-teal-600">
           Ingreso de orden de despacho
         </div>
+        
         <div className="mb-5">
           <label className="block font-bold mb-2">Fecha de despacho</label>
           <input
             type="date"
-            placeholder="Ingresa fecha de despacho"
             className="border border-gray-300 rounded-lg block w-full p-1"
             {...register("fechaDespacho", { required: true })}
           />
         </div>
+        
         <div className="mb-5">
           <label className="block font-bold mb-2">Patente de camión</label>
           <input
             type="text"
-            placeholder="Elige patente de camión"
+            placeholder="Ej: AB-1234"
             className="border border-gray-300 rounded-lg block w-full p-1"
             {...register("patenteCamion", { required: true })}
           />
         </div>
+        
         <div className="mb-5">
-          <label className="block font-bold mb-2">
-            Orden de compra asociado
-          </label>
+          <label className="block font-bold mb-2">Orden de compra asociado</label>
           <input
             type="number"
             disabled={true}
@@ -89,6 +103,7 @@ export const FormDespacho = ({ venta, onClose }) => {
             className="border border-gray-300 rounded-lg block w-full text-slate-400 p-1"
           />
         </div>
+        
         <div className="mb-5">
           <label className="block font-bold mb-2">Dirección de entrega</label>
           <input
@@ -98,6 +113,7 @@ export const FormDespacho = ({ venta, onClose }) => {
             className="border border-gray-300 rounded-lg block w-full text-slate-400 p-1"
           />
         </div>
+        
         <div className="mb-5">
           <label className="block font-bold mb-2">Valor de compra</label>
           <input
@@ -109,7 +125,7 @@ export const FormDespacho = ({ venta, onClose }) => {
         </div>
 
         <button
-          className="py-6 px-14 rounded-lg bg-teal-600 text-white font-bold mb-14"
+          className="py-6 px-14 rounded-lg bg-teal-600 text-white font-bold mb-14 hover:bg-teal-700 transition-colors"
           type="submit"
         >
           Asignar despacho
